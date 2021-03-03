@@ -176,8 +176,6 @@ class cboard_PQDB:public bsim_picsim
     
     lxaudio buzzer;
     
-    char mi2c_tmp_name[200]; 
-    
     void RegisterRemoteControl(void);  
   public:
       lxString GetAboutInfo(void){return lxT("R.M.A. Almeida	  \n <rodrigomax@unifei.edu.br>");};
@@ -186,7 +184,7 @@ class cboard_PQDB:public bsim_picsim
       void Draw(CDraw *draw,double scale);
       void Run_CPU(void);
       lxString GetSupportedDevices(void){return lxT("PIC18F4520,");};
-      lxString GetPictureFileName(void){return lxT("PQDB/pqdb.png");};
+      lxString GetPictureFileName(void){return lxT("PQDB/pqdb.svg");};
       lxString GetInputMapFile(void){return lxT("PQDB/input.map");};
       lxString GetOutputMapFile(void){return lxT("PQDB/output.map");};
       void Reset(void);
