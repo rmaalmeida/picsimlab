@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2020-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2020-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,13 +40,15 @@ class cpart_LCD_ssd1306:public part
       ~cpart_LCD_ssd1306(void);
       void Draw(void);
       void Process(void);
-      lxString GetPictureFileName(void){return lxT("LCD_ssd1306/LCD_ssd1306.png");};
+      lxString GetPictureFileName(void){return lxT("LCD_ssd1306/LCD_ssd1306.svg");};
       lxString GetInputMapFile(void){return lxT("LCD_ssd1306/LCD_ssd1306_i.map");};
       lxString GetOutputMapFile(void){return lxT("LCD_ssd1306/LCD_ssd1306_o.map");};
       lxString GetPropertiesWindowFile(void){return lxT("LCD_ssd1306/LCD_ssd1306.lxrad");};
       void ConfigurePropertiesWindow(CPWindow *  WProp);
       void ReadPropertiesWindow(CPWindow * WProp);
       lxString WritePreferences(void);
+      void SetOrientation(int orientation);
+      void SetScale(double scale);
       void ReadPreferences(lxString value);
       unsigned short get_in_id(char * name);
       unsigned short get_out_id(char * name);
@@ -54,6 +56,7 @@ class cpart_LCD_ssd1306:public part
       unsigned char input_pins[5]; 
       lcd_ssd1306_t lcd;
       unsigned char type_com;
+      lxFont font;
 };
 
 

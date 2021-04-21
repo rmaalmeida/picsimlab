@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -46,14 +46,15 @@ enum
  I_START, I_VIEW
 };
 
-cpart_VCD_Dump::cpart_VCD_Dump(unsigned x, unsigned y)
+cpart_VCD_Dump::cpart_VCD_Dump(unsigned x, unsigned y):
+font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
  ReadMaps ();
 
  lxImage image(&Window5);
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
  Bitmap = new lxBitmap (&image, &Window5);
  image.Destroy ();
@@ -131,9 +132,8 @@ cpart_VCD_Dump::Draw(void)
 
  const picpin * ppins = Window5.GetPinsValues ();
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -497,5 +497,5 @@ cpart_VCD_Dump::EvMouseButtonPress(uint button, uint x, uint y, uint state)
   }
 }
 
-part_init("VCD Dump", cpart_VCD_Dump, "Output");
+part_init("VCD Dump", cpart_VCD_Dump, "Virtual");
 

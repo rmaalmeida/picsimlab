@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2019  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,7 +34,8 @@ enum
  O_P1, O_P2, O_P3, O_P4, O_F1, O_F2, O_LED
 };
 
-cpart_led_matrix::cpart_led_matrix(unsigned x, unsigned y)
+cpart_led_matrix::cpart_led_matrix(unsigned x, unsigned y):
+font (8, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
@@ -43,7 +44,7 @@ cpart_led_matrix::cpart_led_matrix(unsigned x, unsigned y)
 
  lxImage image(&Window5);
 
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
  angle = 0;
 
@@ -74,9 +75,8 @@ cpart_led_matrix::Draw(void)
 {
  int i;
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (8, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)

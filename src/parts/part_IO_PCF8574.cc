@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2019-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2019-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -73,19 +73,20 @@ const char pin_values[16][10] = {
  "+5V"
 };
 
-cpart_IO_PCF8574::cpart_IO_PCF8574(unsigned x, unsigned y)
+cpart_IO_PCF8574::cpart_IO_PCF8574(unsigned x, unsigned y) :
+font(8, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
  ReadMaps ();
  Bitmap = NULL;
 
- lxImage image(&Window5);
+ lxImage image (&Window5);
 
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
 
- Bitmap = lxGetBitmapRotated(&image, &Window5, orientation);
+ Bitmap = new lxBitmap (&image, &Window5);
  image.Destroy ();
  canvas.Create (Window5.GetWWidget (), Bitmap);
 
@@ -111,7 +112,7 @@ cpart_IO_PCF8574::cpart_IO_PCF8574(unsigned x, unsigned y)
  mcount = 0;
  memset (output_pins_alm, 0, 9 * sizeof (unsigned long));
 
- _ret=255;
+ _ret = 255;
 }
 
 cpart_IO_PCF8574::~cpart_IO_PCF8574(void)
@@ -128,9 +129,8 @@ cpart_IO_PCF8574::Draw(void)
 
  int i;
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (8, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -139,10 +139,10 @@ cpart_IO_PCF8574::Draw(void)
    switch (output[i].id)
     {
     case O_IC:
-     canvas.SetColor (0, 0, 0);
+     canvas.SetColor (26, 26, 26);
      canvas.Rectangle (1, output[i].x1, output[i].y1, output[i].x2 - output[i].x1, output[i].y2 - output[i].y1);
      canvas.SetFgColor (255, 255, 255);
-     canvas.RotatedText ("PCF8574", output[i].x1, output[i].y2 - 15, 0.0);
+     canvas.RotatedText ("PCF8574", output[i].x1 + 14, output[i].y2 - 15, 0.0);
      break;
     default:
      canvas.SetColor (49, 61, 99);
@@ -250,7 +250,6 @@ cpart_IO_PCF8574::ReadPreferences(lxString value)
 
  Reset ();
 }
-
 
 void
 cpart_IO_PCF8574::ConfigurePropertiesWindow(CPWindow * WProp)
@@ -402,15 +401,15 @@ cpart_IO_PCF8574::Process(void)
  mcount++;
  if (mcount >= JUMPSTEPS_)
   {
-   if (ppins[output_pins[0]-1].value)output_pins_alm[0]++;
-   if (ppins[output_pins[1]-1].value)output_pins_alm[1]++;
-   if (ppins[output_pins[2]-1].value)output_pins_alm[2]++;
-   if (ppins[output_pins[3]-1].value)output_pins_alm[3]++;
-   if (ppins[output_pins[4]-1].value)output_pins_alm[4]++;
-   if (ppins[output_pins[5]-1].value)output_pins_alm[5]++;
-   if (ppins[output_pins[6]-1].value)output_pins_alm[6]++;
-   if (ppins[output_pins[7]-1].value)output_pins_alm[7]++;
-   if (ppins[output_pins[8]-1].value)output_pins_alm[8]++;
+   if (ppins[output_pins[0] - 1].value)output_pins_alm[0]++;
+   if (ppins[output_pins[1] - 1].value)output_pins_alm[1]++;
+   if (ppins[output_pins[2] - 1].value)output_pins_alm[2]++;
+   if (ppins[output_pins[3] - 1].value)output_pins_alm[3]++;
+   if (ppins[output_pins[4] - 1].value)output_pins_alm[4]++;
+   if (ppins[output_pins[5] - 1].value)output_pins_alm[5]++;
+   if (ppins[output_pins[6] - 1].value)output_pins_alm[6]++;
+   if (ppins[output_pins[7] - 1].value)output_pins_alm[7]++;
+   if (ppins[output_pins[8] - 1].value)output_pins_alm[8]++;
 
    mcount = -1;
   }
@@ -424,15 +423,15 @@ cpart_IO_PCF8574::PostProcess(void)
  long int NSTEPJ = Window1.GetNSTEPJ ();
  const picpin * ppins = Window5.GetPinsValues ();
 
- Window5.WritePinOA (output_pins[0], (ppins[output_pins[0] - 1].oavalue + ((output_pins_alm[0]*255.0) / NSTEPJ)) / 2);
- Window5.WritePinOA (output_pins[1], (ppins[output_pins[1] - 1].oavalue + ((output_pins_alm[1]*255.0) / NSTEPJ)) / 2);
- Window5.WritePinOA (output_pins[2], (ppins[output_pins[2] - 1].oavalue + ((output_pins_alm[2]*255.0) / NSTEPJ)) / 2);
- Window5.WritePinOA (output_pins[3], (ppins[output_pins[3] - 1].oavalue + ((output_pins_alm[3]*255.0) / NSTEPJ)) / 2);
- Window5.WritePinOA (output_pins[4], (ppins[output_pins[4] - 1].oavalue + ((output_pins_alm[4]*255.0) / NSTEPJ)) / 2);
- Window5.WritePinOA (output_pins[5], (ppins[output_pins[5] - 1].oavalue + ((output_pins_alm[5]*255.0) / NSTEPJ)) / 2);
- Window5.WritePinOA (output_pins[6], (ppins[output_pins[6] - 1].oavalue + ((output_pins_alm[6]*255.0) / NSTEPJ)) / 2);
- Window5.WritePinOA (output_pins[7], (ppins[output_pins[7] - 1].oavalue + ((output_pins_alm[7]*255.0) / NSTEPJ)) / 2);
- Window5.WritePinOA (output_pins[8], (ppins[output_pins[8] - 1].oavalue + ((output_pins_alm[8]*255.0) / NSTEPJ)) / 2);
+ Window5.WritePinOA (output_pins[0], (ppins[output_pins[0] - 1].oavalue + ((output_pins_alm[0]*200.0) / NSTEPJ) + 55) / 2);
+ Window5.WritePinOA (output_pins[1], (ppins[output_pins[1] - 1].oavalue + ((output_pins_alm[1]*200.0) / NSTEPJ) + 55) / 2);
+ Window5.WritePinOA (output_pins[2], (ppins[output_pins[2] - 1].oavalue + ((output_pins_alm[2]*200.0) / NSTEPJ) + 55) / 2);
+ Window5.WritePinOA (output_pins[3], (ppins[output_pins[3] - 1].oavalue + ((output_pins_alm[3]*200.0) / NSTEPJ) + 55) / 2);
+ Window5.WritePinOA (output_pins[4], (ppins[output_pins[4] - 1].oavalue + ((output_pins_alm[4]*200.0) / NSTEPJ) + 55) / 2);
+ Window5.WritePinOA (output_pins[5], (ppins[output_pins[5] - 1].oavalue + ((output_pins_alm[5]*200.0) / NSTEPJ) + 55) / 2);
+ Window5.WritePinOA (output_pins[6], (ppins[output_pins[6] - 1].oavalue + ((output_pins_alm[6]*200.0) / NSTEPJ) + 55) / 2);
+ Window5.WritePinOA (output_pins[7], (ppins[output_pins[7] - 1].oavalue + ((output_pins_alm[7]*200.0) / NSTEPJ) + 55) / 2);
+ Window5.WritePinOA (output_pins[8], (ppins[output_pins[8] - 1].oavalue + ((output_pins_alm[8]*200.0) / NSTEPJ) + 55) / 2);
 
 }
 

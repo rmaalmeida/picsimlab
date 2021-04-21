@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2019-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2019-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,14 +40,15 @@ enum
  I_PO1, I_PO2, I_PO3, I_TP, I_MF
 };
 
-cpart_SignalGenerator::cpart_SignalGenerator(unsigned x, unsigned y)
+cpart_SignalGenerator::cpart_SignalGenerator(unsigned x, unsigned y):
+font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
  ReadMaps ();
 
  lxImage image(&Window5);
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
  Bitmap = new lxBitmap (&image, &Window5);
  image.Destroy ();
@@ -88,9 +89,8 @@ cpart_SignalGenerator::Draw(void)
  float tsi;
  int sizex;
  int sizey;
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -258,7 +258,7 @@ cpart_SignalGenerator::EvMouseButtonPress(uint button, uint x, uint y, uint stat
    if (PointInside (x, y, input[i]))
     {
      l = (input[i].y2 - input[i].y1 - 10);
-     switch (orientation)
+     switch (Orientation)
       {
       case 1:
        y = Height - x;
@@ -338,7 +338,7 @@ cpart_SignalGenerator::EvMouseMove(uint button, uint x, uint y, uint state)
    if (PointInside (x, y, input[i]))
     {
      l = (input[i].y2 - input[i].y1 - 10);
-     switch (orientation)
+     switch (Orientation)
       {
       case 1:
        y = Height - x;
@@ -492,5 +492,5 @@ cpart_SignalGenerator::ReadPropertiesWindow(CPWindow * WProp)
  RegisterRemoteControl ();
 }
 
-part_init("Signal Generator", cpart_SignalGenerator, "Input");
+part_init("Signal Generator", cpart_SignalGenerator, "Virtual");
 

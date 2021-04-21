@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2019  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ public:
     void Process(void);
 
     lxString GetPictureFileName(void) {
-        return lxT("tempsys/TempSys.png");
+        return lxT("tempsys/TempSys.svg");
     };
 
     lxString GetInputMapFile(void) {
@@ -76,6 +76,7 @@ private:
     int vt;
     int rpmstp;
     int rpmc;
+    lxFont font;
 };
 
 

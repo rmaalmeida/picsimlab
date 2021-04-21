@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ class cpart_pbuttons_an:public part
       ~cpart_pbuttons_an(void);
       void Draw(void);
       void PreProcess(void);
-      lxString GetPictureFileName(void){return lxT("pbuttons/push_buttons.png");};
+      lxString GetPictureFileName(void){return lxT("pbuttons/push_buttons.svg");};
       lxString GetInputMapFile(void){return lxT("pbuttons/push_buttons_i.map");};
       lxString GetOutputMapFile(void){return lxT("pbuttons/push_buttons_o.map");};
       lxString GetPropertiesWindowFile(void){return lxT("pbuttons_an/push_buttons_an.lxrad");};
@@ -59,6 +59,7 @@ class cpart_pbuttons_an:public part
       unsigned char output_pins[1];    
       unsigned char output_value_[8];
       float output_value;
+      lxFont font;
 };
 
 

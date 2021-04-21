@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2019-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2019-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class cpart_IO_74xx595:public part
       void PreProcess (void);
       void Process(void); 
       void PostProcess (void);
-      lxString GetPictureFileName(void){return lxT("Common/IC16.png");};
+      lxString GetPictureFileName(void){return lxT("Common/IC16.svg");};
       lxString GetInputMapFile(void){return lxT("Common/IC16_i.map");};
       lxString GetOutputMapFile(void){return lxT("Common/IC16_o.map");};
       lxString GetPropertiesWindowFile(void){return lxT("io_74xx595/IO_74xx595.lxrad");};
@@ -60,6 +60,7 @@ class cpart_IO_74xx595:public part
       int JUMPSTEPS_;
       io_74xx595_t sr8;
       unsigned short _ret; 
+      lxFont font;
 };
 
 

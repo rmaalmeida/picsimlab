@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2015  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,14 +40,17 @@ class cboard_McLab1:public bsim_picsim
      CGauge *gauge1;
      CLabel *label1;
      void RegisterRemoteControl(void); 
+     lxColor color1;
+     lxColor color2;
+     lxFont font;     
    public:
       lxString GetAboutInfo(void){return lxT("L.C. Gamboa \n <lcgamboa@yahoo.com>");}; 
       cboard_McLab1(void);
       ~cboard_McLab1(void);
-      void Draw(CDraw *draw,double scale);
+      void Draw(CDraw *draw);
       void Run_CPU(void);
       lxString GetSupportedDevices(void){return lxT("PIC16F628A,PIC16F648A,PIC16F84A,");};
-      lxString GetPictureFileName(void){return lxT("McLab1/board.png");};
+      lxString GetPictureFileName(void){return lxT("McLab1/board.svg");};
       lxString GetInputMapFile(void){return lxT("McLab1/input.map");};
       lxString GetOutputMapFile(void){return lxT("McLab1/output.map");};
       void Reset(void);

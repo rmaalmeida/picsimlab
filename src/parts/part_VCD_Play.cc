@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2019-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2019-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -56,7 +56,8 @@ const char pin_values[8][10] = {
  "+5V"
 };
 
-cpart_VCD_Play::cpart_VCD_Play(unsigned x, unsigned y)
+cpart_VCD_Play::cpart_VCD_Play(unsigned x, unsigned y):
+font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
@@ -65,7 +66,7 @@ cpart_VCD_Play::cpart_VCD_Play(unsigned x, unsigned y)
 
  lxImage image(&Window5);
 
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
 
  Bitmap = new lxBitmap (&image, &Window5);
@@ -130,9 +131,8 @@ cpart_VCD_Play::Draw(void)
  int to;
  const picpin * ppins = Window5.GetPinsValues ();
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -647,5 +647,5 @@ cpart_VCD_Play::LoadVCD(lxString fname)
 }
 
 
-part_init("VCD Play", cpart_VCD_Play, "Input");
+part_init("VCD Play", cpart_VCD_Play, "Virtual");
 

@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2019-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2019-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -52,16 +52,16 @@ cpart_keypad::GetPictureFileName(void)
  switch (type)
   {
   case KT4x4:
-   return lxT ("keypad/keypad_4x4.png");
+   return lxT ("keypad/keypad_4x4.svg");
    break;
   case KT4x3:
-   return lxT ("keypad/keypad_4x3.png");
+   return lxT ("keypad/keypad_4x3.svg");
    break;
   case KT2x5:
-   return lxT ("keypad/keypad_2x5.png");
+   return lxT ("keypad/keypad_2x5.svg");
    break;
   }
- return lxT ("keypad/keypad_4x4.png");
+ return lxT ("keypad/keypad_4x4.svg");
 }
 
 lxString
@@ -100,7 +100,8 @@ cpart_keypad::GetOutputMapFile(void)
  return lxT ("keypad/keypad_4x4_o.map");
 }
 
-cpart_keypad::cpart_keypad(unsigned x, unsigned y)
+cpart_keypad::cpart_keypad(unsigned x, unsigned y):
+font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)   
 {
  X = x;
  Y = y;
@@ -261,7 +262,7 @@ cpart_keypad::ChangeType(unsigned char tp)
  ReadMaps ();
 
  lxImage image(&Window5);
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
  Bitmap = new lxBitmap (&image, &Window5);
  image.Destroy ();
@@ -276,9 +277,8 @@ cpart_keypad::Draw(void)
 
  int i;
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)

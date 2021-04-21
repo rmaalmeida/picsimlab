@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2017  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,7 +34,8 @@ enum
  O_P1, O_P2, O_P3, O_P4, O_P5, O_P6, O_P7, O_P8, O_L1, O_L2, O_L3, O_L4, O_L5, O_L6, O_L7, O_L8
 };
 
-cpart_leds::cpart_leds(unsigned x, unsigned y)
+cpart_leds::cpart_leds(unsigned x, unsigned y):
+font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
@@ -42,9 +43,9 @@ cpart_leds::cpart_leds(unsigned x, unsigned y)
 
  ReadMaps ();
 
- lxImage image(&Window5);
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
-
+ lxImage image (&Window5);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
+ 
  Bitmap = new lxBitmap (&image, &Window5);
  image.Destroy ();
  canvas.Create (Window5.GetWWidget (), Bitmap);
@@ -74,9 +75,8 @@ cpart_leds::Draw(void)
 
  const picpin * ppins = Window5.GetPinsValues ();
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -110,20 +110,33 @@ cpart_leds::Draw(void)
     case O_L8:
      if (input_pins[output[i].id - O_L1] > 0)
       {
-       if(active)
+       if (active)
         {
-           canvas.SetColor (ppins[input_pins[output[i].id - O_L1] - 1].oavalue, 0, 0);
+         canvas.SetBgColor (ppins[input_pins[output[i].id - O_L1] - 1].oavalue, 0, 0);
         }
        else
         {
-           canvas.SetColor (285- ppins[input_pins[output[i].id - O_L1] - 1].oavalue, 0, 0);  
+         canvas.SetBgColor (310 - ppins[input_pins[output[i].id - O_L1] - 1].oavalue, 0, 0);
         }
       }
      else
       {
-       canvas.SetColor (30, 0, 0);
+       canvas.SetBgColor (55, 0, 0);
       }
-     canvas.Circle (1, output[i].x1, output[i].y1, output[i].r);
+     canvas.SetFgColor (0, 0, 0);
+     //draw a circle
+     color1 = canvas.GetBgColor ();
+     int r = color1.Red () - 120;
+     int g = color1.Green () - 120;
+     int b = color1.Blue () - 120;
+     if (r < 0)r = 0;
+     if (g < 0)g = 0;
+     if (b < 0)b = 0;
+     color2.Set(r, g, b);
+     canvas.SetBgColor (color2);
+     canvas.Circle (1, output[i].x1, output[i].y1, output[i].r );
+     canvas.SetBgColor (color1);
+     canvas.Circle (1, output[i].x1, output[i].y1, output[i].r - 3);
      break;
     }
 
@@ -349,7 +362,7 @@ cpart_leds::ReadPropertiesWindow(CPWindow * WProp)
  input_pins[7] = atoi (((CCombo*) WProp->GetChildByName ("combo8"))->GetText ());
 
  active = (((CCombo*) WProp->GetChildByName ("combo9"))->GetText ().compare ("HIGH") == 0);
- 
+
  RegisterRemoteControl ();
 }
 

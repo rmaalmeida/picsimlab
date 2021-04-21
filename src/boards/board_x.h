@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2015-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2015-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -48,7 +48,12 @@ class cboard_x:public bsim_picsim
      CLabel *label2;   //label of gauge RB0
      CLabel *label3;   //label of gauge RB1
      
+     //Register controls for remote interface called once on board creation 
      void RegisterRemoteControl(void);  
+     
+     lxColor color1;//LEDs color 1
+     lxColor color2;//LEDs color 2   
+     lxFont font;
    public:
       //Constructor called once on board creation 
       cboard_x(void);
@@ -57,7 +62,7 @@ class cboard_x:public bsim_picsim
       //Return the about info of board
       lxString GetAboutInfo(void){return lxT("L.C. Gamboa \n <lcgamboa@yahoo.com>");};
       //Called ever 100ms to draw board
-      void Draw(CDraw *draw,double scale);
+      void Draw(CDraw *draw);
       void Run_CPU(void);
       //Return a list of board supported microcontrollers
       lxString GetSupportedDevices(void){return lxT("PIC16F877A,PIC18F4550,PIC18F4620,");};

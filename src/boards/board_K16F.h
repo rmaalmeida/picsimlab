@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2015  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -58,15 +58,18 @@ class cboard_K16F:public bsim_picsim
      unsigned char sda,sck;
      char mi2c_tmp_name[200];  
      
-     void RegisterRemoteControl(void);     
+     void RegisterRemoteControl(void);    
+     lxColor color1;
+     lxColor color2;
+     lxFont font;
   public:
       lxString GetAboutInfo(void){return lxT("L.C. Gamboa \n <lcgamboa@yahoo.com>");};
       cboard_K16F(void);
       ~cboard_K16F(void);
-      void Draw(CDraw *draw,double scale);
+      void Draw(CDraw *draw);
       void Run_CPU(void);
       lxString GetSupportedDevices(void){return lxT("PIC16F628A,PIC16F648A,PIC16F84A,");};
-      lxString GetPictureFileName(void){return lxT("K16F/board.png");};
+      lxString GetPictureFileName(void){return lxT("K16F/board.svg");};
       lxString GetInputMapFile(void){return lxT("K16F/input.map");};
       lxString GetOutputMapFile(void){return lxT("K16F/output.map");};
       void Reset(void);

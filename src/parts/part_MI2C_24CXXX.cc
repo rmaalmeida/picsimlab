@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2019-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2019-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -56,7 +56,8 @@ const char pin_values[8][10] = {
  "+5V"
 };
 
-cpart_MI2C_24CXXX::cpart_MI2C_24CXXX(unsigned x, unsigned y)
+cpart_MI2C_24CXXX::cpart_MI2C_24CXXX(unsigned x, unsigned y):
+font (8, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
@@ -65,10 +66,9 @@ cpart_MI2C_24CXXX::cpart_MI2C_24CXXX(unsigned x, unsigned y)
 
  lxImage image(&Window5);
 
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
-
- Bitmap = lxGetBitmapRotated(&image, &Window5, orientation);
+ Bitmap = new lxBitmap(&image, &Window5);
  image.Destroy ();
  canvas.Create (Window5.GetWWidget (), Bitmap);
 
@@ -109,9 +109,8 @@ cpart_MI2C_24CXXX::Draw(void)
 
  int i;
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (8, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -122,7 +121,7 @@ cpart_MI2C_24CXXX::Draw(void)
     case O_IC:
      char buff[10];
      snprintf (buff, 9, "24C%02i", kbits);
-     canvas.SetColor (0, 0, 0);
+     canvas.SetColor (26, 26, 26);
      canvas.Rectangle (1, output[i].x1, output[i].y1, output[i].x2 - output[i].x1, output[i].y2 - output[i].y1);
      canvas.SetFgColor (255, 255, 255);
      canvas.RotatedText (buff, output[i].x1, output[i].y2 - 15, 0);

@@ -123,11 +123,11 @@ cboard_PQDB::~cboard_PQDB(void)
 }
 
 void
-cboard_PQDB::Draw(CDraw * draw, double scale)
+cboard_PQDB::Draw(CDraw * draw)
 {
  int i;
 
- draw -> Canvas.Init (scale, scale);
+ draw -> Canvas.Init (Scale, Scale);
 
  lcd_blink (& lcd);
 
@@ -305,6 +305,8 @@ cboard_PQDB::Draw(CDraw * draw, double scale)
      //draw lcd text 
      if (output[i].id == O_LCD)
       {
+       //strech lcd background
+       draw -> Canvas.Rectangle (1, output[i].x1 - 8, output[i].y1 - 10, output[i].x2 - output[i].x1 + 17, output[i].y2 - output[i].y1 + 20);
        lcd_draw (&lcd, &draw->Canvas, output[i].x1, output[i].y1, output[i].x2 - output[i].x1, output[i].y2 - output[i].y1, Window1.Get_mcupwr ());
       }
 
@@ -580,14 +582,14 @@ cboard_PQDB::Run_CPU(void)
   }
 
  //sr mean value
- pic.pins[PSRD0].oavalue = (pic.pins[PSRD0].oavalue + ((shiftReg_alm[0]*255.0) / NSTEPJ)) / 2;
- pic.pins[PSRD1].oavalue = (pic.pins[PSRD1].oavalue + ((shiftReg_alm[1]*255.0) / NSTEPJ)) / 2;
- pic.pins[PSRD2].oavalue = (pic.pins[PSRD2].oavalue + ((shiftReg_alm[2]*255.0) / NSTEPJ)) / 2;
- pic.pins[PSRD3].oavalue = (pic.pins[PSRD3].oavalue + ((shiftReg_alm[3]*255.0) / NSTEPJ)) / 2;
- pic.pins[PSRD4].oavalue = (pic.pins[PSRD4].oavalue + ((shiftReg_alm[4]*255.0) / NSTEPJ)) / 2;
- pic.pins[PSRD5].oavalue = (pic.pins[PSRD5].oavalue + ((shiftReg_alm[5]*255.0) / NSTEPJ)) / 2;
- pic.pins[PSRD6].oavalue = (pic.pins[PSRD6].oavalue + ((shiftReg_alm[6]*255.0) / NSTEPJ)) / 2;
- pic.pins[PSRD7].oavalue = (pic.pins[PSRD7].oavalue + ((shiftReg_alm[7]*255.0) / NSTEPJ)) / 2;
+ pic.pins[PSRD0].oavalue = (pic.pins[PSRD0].oavalue + ((shiftReg_alm[0]*200.0) / NSTEPJ) + 55) / 2;
+ pic.pins[PSRD1].oavalue = (pic.pins[PSRD1].oavalue + ((shiftReg_alm[1]*200.0) / NSTEPJ) + 55) / 2;
+ pic.pins[PSRD2].oavalue = (pic.pins[PSRD2].oavalue + ((shiftReg_alm[2]*200.0) / NSTEPJ) + 55) / 2;
+ pic.pins[PSRD3].oavalue = (pic.pins[PSRD3].oavalue + ((shiftReg_alm[3]*200.0) / NSTEPJ) + 55) / 2;
+ pic.pins[PSRD4].oavalue = (pic.pins[PSRD4].oavalue + ((shiftReg_alm[4]*200.0) / NSTEPJ) + 55) / 2;
+ pic.pins[PSRD5].oavalue = (pic.pins[PSRD5].oavalue + ((shiftReg_alm[5]*200.0) / NSTEPJ) + 55) / 2;
+ pic.pins[PSRD6].oavalue = (pic.pins[PSRD6].oavalue + ((shiftReg_alm[6]*200.0) / NSTEPJ) + 55) / 2;
+ pic.pins[PSRD7].oavalue = (pic.pins[PSRD7].oavalue + ((shiftReg_alm[7]*200.0) / NSTEPJ) + 55) / 2;
  if (use_spare) Window5.PostProcess ();
 
 }

@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,14 +40,16 @@ enum
  I_PO1, I_PO2, I_PO3, I_PO4
 };
 
-cpart_pot_r::cpart_pot_r(unsigned x, unsigned y)
+cpart_pot_r::cpart_pot_r(unsigned x, unsigned y):
+font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD),
+font_p (8, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
  ReadMaps ();
 
- lxImage image(&Window5);
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ lxImage image (&Window5);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
  Bitmap = new lxBitmap (&image, &Window5);
  image.Destroy ();
@@ -71,7 +73,7 @@ cpart_pot_r::cpart_pot_r(unsigned x, unsigned y)
  active[3] = 0;
 
  RegisterRemoteControl ();
- 
+
 }
 
 void
@@ -110,10 +112,8 @@ cpart_pot_r::Draw(void)
  int i;
  char val[10];
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
- lxFont font_p (6, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -137,22 +137,22 @@ cpart_pot_r::Draw(void)
     case O_PO2:
     case O_PO3:
     case O_PO4:
-     canvas.SetColor (50, 50, 50);
+     canvas.SetFgColor (0, 0, 0);
+     canvas.SetBgColor (66, 109, 246);
      canvas.Rectangle (1, output[i].x1, output[i].y1, output[i].x2 - output[i].x1, output[i].y2 - output[i].y1);
 
-     canvas.SetColor (150, 150, 150);
-     canvas.Circle (1, output[i].cx, output[i].cy, 25);
+     canvas.SetBgColor (250, 250, 250);
+     canvas.Circle (1, output[i].cx, output[i].cy, 17);
 
-     canvas.SetColor (250, 250, 250);
-     int x = -18 * sin ((5.585 * (values[output[i].id - O_PO1] / 200.0)) + 0.349);
-     int y = 18 * cos ((5.585 * (values[output[i].id - O_PO1] / 200.0)) + 0.349);
-     canvas.Circle (1, output[i].cx + x, output[i].cy + y, 5);
+     canvas.SetBgColor (150, 150, 150);
+     int x = -13 * sin ((5.585 * (values[output[i].id - O_PO1] / 200.0)) + 0.349);
+     int y = 13 * cos ((5.585 * (values[output[i].id - O_PO1] / 200.0)) + 0.349);
+     canvas.Circle (1, output[i].cx + x, output[i].cy + y, 2);
 
-     canvas.SetColor (250, 250, 250);
-
-     canvas.Rectangle (1, output[i].x1 + 6, output[i].y2 + 6, 20, 10);
+     canvas.SetColor (49, 61, 99);
+     canvas.Rectangle (1, output[i].x1 + 6, output[i].y2 + 6, 30, 15);
      snprintf (val, 10, "%4.2f", 5.0 * (values[output[i].id - O_PO1]) / 200.0);
-     canvas.SetColor (150, 0, 0);
+     canvas.SetColor (250, 250, 250);
      canvas.SetFont (font_p);
      canvas.RotatedText (val, output[i].x1 + 6, output[i].y2 + 6, 0);
      break;

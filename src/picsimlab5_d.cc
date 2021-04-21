@@ -27,7 +27,7 @@ CPWindow5::CPWindow5(void)
   menu1.SetClass(lxT("CMenu"));
   menu1.SetName(lxT("menu1"));
   menu1.SetTag(0);
-  menu1.SetMenuItems(lxT("File,Edit,Inputs,Outputs,Others,Help,"));
+  menu1.SetMenuItems(lxT("File,Edit,Inputs,Outputs,Others,Virtual,Help,"));
   CreateChild(&menu1);
   //draw1
   draw1.SetFOwner(this);
@@ -48,6 +48,7 @@ CPWindow5::CPWindow5(void)
   draw1.EvMouseButtonRelease=EVMOUSEBUTTONRELEASE & CPWindow5::draw1_EvMouseButtonRelease;
   draw1.EvKeyboardPress=EVKEYBOARDPRESS & CPWindow5::draw1_EvKeyboardPress;
   draw1.EvKeyboardRelease=EVKEYBOARDRELEASE & CPWindow5::draw1_EvKeyboardRelease;
+  draw1.EvMouseWheel=EVMOUSEWHEEL & CPWindow5::draw1_EvMouseWheel;
   draw1.SetTransparent(0);
   draw1.SetImgFileName(lxT(""));
   CreateChild(&draw1);
@@ -91,6 +92,14 @@ CPWindow5::CPWindow5(void)
   menu1_Others.SetText(lxT("Others"));
   menu1_Others.SetMenuItems(lxT(""));
   menu1.CreateChild(&menu1_Others);
+  //menu1_Virtual
+  menu1_Virtual.SetFOwner(this);
+  menu1_Virtual.SetClass(lxT("CPMenu"));
+  menu1_Virtual.SetName(lxT("menu1_Virtual"));
+  menu1_Virtual.SetTag(0);
+  menu1_Virtual.SetText(lxT("Virtual"));
+  menu1_Virtual.SetMenuItems(lxT(""));
+  menu1.CreateChild(&menu1_Virtual);
   //pmenu2
   pmenu2.SetFOwner(this);
   pmenu2.SetClass(lxT("CPMenu"));
@@ -297,6 +306,13 @@ CPWindow5::CPWindow5(void)
   filedialog1.SetType(129);
   filedialog1.EvOnClose=EVONCLOSE & CPWindow5::filedialog1_EvOnClose;
   CreateChild(&filedialog1);
+  //statusbar1
+  statusbar1.SetFOwner(this);
+  statusbar1.SetClass(lxT("CStatusbar"));
+  statusbar1.SetName(lxT("statusbar1"));
+  statusbar1.SetTag(0);
+  statusbar1.SetFields(lxT("alias,scale,offset,"));
+  CreateChild(&statusbar1);
   /*#Others*/
 //lxrad automatic generated block end, don't edit above!
   
@@ -313,4 +329,8 @@ CPWindow5::CPWindow5(void)
   fdtype = -1;
   useAlias=0;
   alias_fname="";
+  offsetx=0;
+  offsety=0;
+  mouse_scroll=0;
+  need_resize=0;
 }

@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2015-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2015-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
    ######################################################################## */
 
 //include files
+
 #include"../picsimlab1.h"
 #include"../picsimlab4.h" //Oscilloscope
 #include"../picsimlab5.h" //Spare Parts
@@ -78,12 +79,13 @@ cboard_uCboard::get_out_id(char * name)
 
 //Constructor called once on board creation 
 
-cboard_uCboard::cboard_uCboard(void)
+cboard_uCboard::cboard_uCboard(void):
+font (10, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  Proc = "C51"; //default microcontroller if none defined in preferences
  ReadMaps (); //Read input and output board maps
- lxImage image(&Window1);
- image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/ic40.png"));
+ lxImage image (&Window1);
+ image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/ic40.svg"), 0, Scale, Scale,1);
  micbmp = new lxBitmap (&image, &Window1);
 #
  serialfd = INVALID_HANDLE_VALUE;
@@ -256,15 +258,15 @@ cboard_uCboard::EvMouseButtonRelease(uint button, uint x, uint y, uint state)
 //This is the critical code for simulator running speed
 
 void
-cboard_uCboard::Draw(CDraw *draw, double scale)
+cboard_uCboard::Draw(CDraw *draw)
 {
  int i;
  lxRect rec;
  lxSize ps;
- lxFont font ((MGetPinCount () >= 100) ? 9 : ((MGetPinCount () > 14) ? 12 : 10)
-              , lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_NORMAL);
 
- draw->Canvas.Init (scale, scale); //initialize draw context
+ font.SetPointSize ((MGetPinCount () >= 100) ? 9 : ((MGetPinCount () > 14) ? 12 : 10));
+            
+ draw->Canvas.Init (Scale, Scale); //initialize draw context
 
  //board_x draw 
  for (i = 0; i < outputc; i++) //run over all outputs
@@ -285,19 +287,20 @@ cboard_uCboard::Draw(CDraw *draw, double scale)
        draw->Canvas.SetFont (font);
 
        ps = micbmp->GetSize ();
-       draw->Canvas.PutBitmap (micbmp, output[i].x1, output[i].y1);
-       draw->Canvas.SetFgColor (255, 255, 255);
+       draw->Canvas.ChangeScale (1.0, 1.0);
+       draw->Canvas.PutBitmap (micbmp, output[i].x1*Scale, output[i].y1 * Scale);
+       draw->Canvas.ChangeScale (Scale, Scale);
+       draw->Canvas.SetFgColor (230, 230, 230);
 
        rec.x = output[i].x1;
        rec.y = output[i].y1;
-       rec.width = ps.GetWidth ();
-       rec.height = ps.GetHeight ();
+       rec.width = ps.GetWidth () / Scale;
+       rec.height = ps.GetHeight () / Scale;
        draw->Canvas.TextOnRect (Proc, rec, lxALIGN_CENTER | lxALIGN_CENTER_VERTICAL);
        break;
       case O_RST:
        draw->Canvas.SetColor (100, 100, 100);
-       draw->Canvas.Rectangle (1, output[i].x1, output[i].y1,
-                               output[i].x2 - output[i].x1, output[i].y2 - output[i].y1);
+       draw->Canvas.Circle (1, output[i].cx, output[i].cy, 11);
        if (p_RST)
         {
          draw->Canvas.SetColor (15, 15, 15);
@@ -306,7 +309,7 @@ cboard_uCboard::Draw(CDraw *draw, double scale)
         {
          draw->Canvas.SetColor (55, 55, 55);
         }
-       draw->Canvas.Circle (1, output[i].cx, output[i].cy, 10);
+       draw->Canvas.Circle (1, output[i].cx, output[i].cy, 9);
        break;
       }
     }
@@ -391,13 +394,13 @@ cboard_uCboard::MInit(const char * processor, const char * fname, float freq)
    Proc = "C51";
   }
 
- lxImage image(&Window1);
+ lxImage image (&Window1);
 
- if (!image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/ic") + itoa (MGetPinCount ()) + lxT (".png")))
+ if (!image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/ic") + itoa (MGetPinCount ()) + lxT (".svg"), 0, Scale, Scale,1))
   {
-   image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/ic6.png"));
+   image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/ic6.svg"), 0, Scale, Scale,1);
    printf ("picsimlab: IC package with %i pins not found!\n", MGetPinCount ());
-   printf ("picsimlab: %s not found!\n", (const char *) (Window1.GetSharePath () + lxT ("boards/Common/ic") + itoa (MGetPinCount ()) + lxT (".png")).c_str ());
+   printf ("picsimlab: %s not found!\n", (const char *) (Window1.GetSharePath () + lxT ("boards/Common/ic") + itoa (MGetPinCount ()) + lxT (".svg")).c_str ());
   }
 
  if (micbmp) delete micbmp;
@@ -405,6 +408,29 @@ cboard_uCboard::MInit(const char * processor, const char * fname, float freq)
 
 
  return ret;
+}
+
+void
+cboard_uCboard::SetScale(double scale)
+{
+
+ if (Scale == scale)return;
+
+ Scale = scale;
+
+
+ lxImage image (&Window1);
+
+ if (!image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/ic") + itoa (MGetPinCount ()) + lxT (".svg"), 0, Scale, Scale,1))
+  {
+   image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/ic6.svg"), 0, Scale, Scale,1);
+   printf ("picsimlab: IC package with %i pins not found!\n", MGetPinCount ());
+   printf ("picsimlab: %s not found!\n", (const char *) (Window1.GetSharePath () + lxT ("boards/Common/ic") + itoa (MGetPinCount ()) + lxT (".svg")).c_str ());
+  }
+
+ if (micbmp) delete micbmp;
+ micbmp = new lxBitmap (&image, &Window1);
+
 }
 
 //Register the board in PICSimLab

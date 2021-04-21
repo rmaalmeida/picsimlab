@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ typedef struct {
     unsigned int y2; ///< y2 position
     unsigned int cx; ///< center x position
     unsigned int cy; ///< center y position
-    char name[10]; ///< region name
+    char name[10];   ///< region name
     unsigned short id; ///< region ID
     void * status;
 } input_t;
@@ -79,7 +79,7 @@ public:
     /**
      * @brief Called ever 100ms to draw board 
      */
-    virtual void Draw(CDraw *draw, double scale) = 0;
+    virtual void Draw(CDraw *draw) = 0;
 
     /**
      * @brief Paralle thread called ever 100ms to run cpu code 
@@ -475,6 +475,16 @@ public:
      */
     unsigned char CalcAngle(int i,  int x, int y);
 
+    /**
+     * @brief  Set board draw scale    
+     */    
+    virtual void SetScale (double scale);
+    
+     /**
+     * @brief  Get board draw scale    
+     */    
+    double GetScale (void);
+
 protected:
     
     /**
@@ -484,14 +494,15 @@ protected:
     
     lxString Name; ///< Name of board registered in PICSimLab  
     lxString Proc; ///< Name of processor in use
-    input_t input[100]; ///< input map elements
-    output_t output[100]; ///< output map elements 
+    input_t input[120]; ///< input map elements
+    output_t output[120]; ///< output map elements 
     int inputc; ///< input map elements counter 
     int outputc; ///< output map elements counter   
     int use_oscope; ///< use oscilloscope window
     int use_spare; ///< use spare parts window             
     unsigned char p_RST; ///< board /RESET pin state
-
+    double Scale;
+    
     /**
      * @brief  Read maps 
      */

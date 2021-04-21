@@ -107,8 +107,23 @@ bsim_simavr::pins_reset(void)
   }
 
  //VCC pins
- pins[6].value = 1;
- pins[19].value = 1;
+ if (lxString (avr->mmcu).compare (lxT ("atmega2560")) == 0)
+  {
+   pins[9].value = 1;
+   pins[30].value = 1;
+   pins[60].value = 1;
+   pins[79].value = 1;
+   pins[99].value = 1;
+  }
+ else if (lxString (avr->mmcu).compare (lxT ("attiny85")) == 0)
+  {
+   pins[7].value = 1;
+  }
+ else//atmega328p
+  {
+   pins[6].value = 1;
+   pins[19].value = 1;
+  }
 }
 
 void
@@ -149,10 +164,15 @@ bsim_simavr::MInit(const char * processor, const char * fname, float freq)
   {
    avr->reset_pc = 0x3E000;
   }
- else
+ else if ((lxString (avr->mmcu).compare (lxT ("atmega328p")) == 0))
   {
    avr->reset_pc = 0x07000; // bootloader 0x3800
   }
+ else
+  {
+   avr->reset_pc = 0x0000;
+  }
+
  avr->avcc = 5000;
 
  //avr->log= LOG_DEBUG;
@@ -435,6 +455,7 @@ bsim_simavr::MGetPinCount(void)
  if (lxString (avr->mmcu).compare (lxT ("atmega328")) == 0)return 28;
  if (lxString (avr->mmcu).compare (lxT ("atmega328p")) == 0)return 28;
  if (lxString (avr->mmcu).compare (lxT ("atmega2560")) == 0)return 100;
+ if (lxString (avr->mmcu).compare (lxT ("attiny85")) == 0)return 8;
  return 0;
 }
 
@@ -745,6 +766,36 @@ bsim_simavr::MGetPinName(int pin)
      return "GND";
      break;
     case 100:
+     return "+5V";
+     break;
+    }
+  }
+ else if (lxString (avr->mmcu).compare (lxT ("attiny85")) == 0)
+  {
+   switch (pin)
+    {
+    case 1:
+     return "PB5/4";
+     break;
+    case 2:
+     return "PB3/3";
+     break;
+    case 3:
+     return "PB4/5";
+     break;
+    case 4:
+     return "GND";
+     break;
+    case 5:
+     return "PB0/0";
+     break;
+    case 6:
+     return "PB1/1";
+     break;
+    case 7:
+     return "PB2/2";
+     break;
+    case 8:
      return "+5V";
      break;
     }

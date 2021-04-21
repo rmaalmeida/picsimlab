@@ -451,14 +451,14 @@ over=0;
 
 plWidth=10;
 plHeight=10;
-scale=0.8;
+scale=1.0;
 
 create=0;
 
 FNAME=lxT(" ");
 OldPath=lxT("");
     
-ondraw=0;    
+crt=1;    
 
 pboard=NULL;
 
@@ -467,6 +467,8 @@ cpustate=CPU_RUNNING;
 tgo=0;
   
 error=0;
+
+need_resize=0;
 
 #ifdef NO_TOOLS
    menu1.DestroyChild (&menu1_Tools);

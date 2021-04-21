@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2019-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2019-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ class cpart_RTC_pfc8563:public part
       ~cpart_RTC_pfc8563(void);
       void Draw(void);
       void Process(void);
-      lxString GetPictureFileName(void){return lxT("Common/IC8.png");};
+      lxString GetPictureFileName(void){return lxT("Common/IC8.svg");};
       lxString GetInputMapFile(void){return lxT("Common/IC8_i.map");};
       lxString GetOutputMapFile(void){return lxT("Common/IC8_o.map");};
       lxString GetPropertiesWindowFile(void){return lxT("RTC_pfc8563/RTC_pfc8563.lxrad");};
@@ -52,6 +52,8 @@ class cpart_RTC_pfc8563:public part
    private:
       unsigned char input_pins[4]; 
       rtc_t rtc;
+      lxFont font;
+      lxFont font_p;      
 };
 
 

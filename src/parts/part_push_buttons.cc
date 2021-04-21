@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,7 +40,8 @@ enum
  I_B1, I_B2, I_B3, I_B4, I_B5, I_B6, I_B7, I_B8, I_J1
 };
 
-cpart_pbuttons::cpart_pbuttons(unsigned x, unsigned y)
+cpart_pbuttons::cpart_pbuttons(unsigned x, unsigned y):
+font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
@@ -49,7 +50,7 @@ cpart_pbuttons::cpart_pbuttons(unsigned x, unsigned y)
  ReadMaps ();
 
  lxImage image(&Window5);
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
  Bitmap = new lxBitmap (&image, &Window5);
  image.Destroy ();
@@ -161,9 +162,8 @@ cpart_pbuttons::Draw(void)
 
  int i;
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -196,7 +196,7 @@ cpart_pbuttons::Draw(void)
     case O_B7:
     case O_B8:
      canvas.SetColor (100, 100, 100);
-     canvas.Rectangle (1, output[i].x1, output[i].y1, output[i].x2 - output[i].x1, output[i].y2 - output[i].y1);
+     canvas.Circle (1, output[i].cx, output[i].cy, 10);
      if (output_value[output[i].id - O_B1] == active)
       {
        canvas.SetColor (55, 55, 55);
@@ -205,7 +205,7 @@ cpart_pbuttons::Draw(void)
       {
        canvas.SetColor (15, 15, 15);
       }
-     canvas.Circle (1, output[i].cx, output[i].cy, 10);
+     canvas.Circle (1, output[i].cx, output[i].cy, 8);
      break;
     }
   }

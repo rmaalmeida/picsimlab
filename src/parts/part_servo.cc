@@ -34,7 +34,8 @@ enum
  O_P1, O_AXIS
 };
 
-cpart_servo::cpart_servo (unsigned x, unsigned y)
+cpart_servo::cpart_servo(unsigned x, unsigned y)
+:font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
@@ -47,31 +48,31 @@ cpart_servo::cpart_servo (unsigned x, unsigned y)
 
  ReadMaps ();
 
- lxImage image(&Window5);
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ lxImage image (&Window5);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
- Bitmap = lxGetBitmapRotated(&image, &Window5, orientation);
+ Bitmap = new lxBitmap (&image, &Window5);
  image.Destroy ();
 
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
- BackGround = lxGetBitmapRotated(&image, &Window5, orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
+ BackGround = new lxBitmap (&image, &Window5);
  image.Destroy ();
 
  canvas.Create (Window5.GetWWidget (), Bitmap);
 }
 
-cpart_servo::~cpart_servo (void)
+cpart_servo::~cpart_servo(void)
 {
  delete Bitmap;
  delete BackGround;
- canvas.Destroy();
+ canvas.Destroy ();
 }
 
 void
-cpart_servo::Draw (void)
+cpart_servo::Draw(void)
 {
- 
- canvas.SetBitmap (BackGround, 1.0, 1.0);
+
+ canvas.SetBitmap (BackGround, 1.0, 1.0); //FIXME draw servo error on scale or rotate
 
  int i;
 
@@ -88,9 +89,8 @@ cpart_servo::Draw (void)
    if (angle > angle_) angle = angle_;
   }
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -107,9 +107,14 @@ cpart_servo::Draw (void)
 
    if (output[i].id == O_AXIS)
     {
-     canvas.SetFgColor (255, 255, 255);
+     float x2 = output[i].x1 + output[i].r * sin (angle);
+     float y2 = output[i].y1 - output[i].r * cos (angle);
+     canvas.SetFgColor (0, 0, 0);
      canvas.SetLineWidth (20);
-     canvas.Line (output[i].x1, output[i].y1, output[i].x1 + output[i].r * sin (angle), output[i].y1 - output[i].r * cos (angle));
+     canvas.Line (output[i].x1, output[i].y1, x2, y2);
+     canvas.SetFgColor (255, 255, 255);
+     canvas.SetLineWidth (18);
+     canvas.Line (output[i].x1, output[i].y1, x2, y2);
     }
 
 
@@ -120,12 +125,12 @@ cpart_servo::Draw (void)
 }
 
 void
-cpart_servo::Process (void)
+cpart_servo::Process(void)
 {
 
  const picpin * ppins = Window5.GetPinsValues ();
 
- if(input_pin == 0)return;
+ if (input_pin == 0)return;
 
  in_[1] = in_[0];
  in_[0] = ppins[input_pin - 1].value;
@@ -148,14 +153,14 @@ cpart_servo::Process (void)
 }
 
 unsigned short
-cpart_servo::get_in_id (char * name)
+cpart_servo::get_in_id(char * name)
 {
  printf ("Erro input '%s' don't have a valid id! \n", name);
  return -1;
 }
 
 unsigned short
-cpart_servo::get_out_id (char * name)
+cpart_servo::get_out_id(char * name)
 {
 
  if (strcmp (name, "PN_1") == 0)return O_P1;
@@ -166,7 +171,7 @@ cpart_servo::get_out_id (char * name)
 }
 
 lxString
-cpart_servo::WritePreferences (void)
+cpart_servo::WritePreferences(void)
 {
  char prefs[256];
 
@@ -176,12 +181,11 @@ cpart_servo::WritePreferences (void)
 }
 
 void
-cpart_servo::ReadPreferences (lxString value)
+cpart_servo::ReadPreferences(lxString value)
 {
  sscanf (value.c_str (), "%hhu", &input_pin);
- RegisterRemoteControl();
+ RegisterRemoteControl ();
 }
-
 
 void
 cpart_servo::RegisterRemoteControl(void)
@@ -191,14 +195,14 @@ cpart_servo::RegisterRemoteControl(void)
    switch (output[i].id)
     {
     case O_AXIS:
-       output[i].status = (void *) &angle;
+     output[i].status = (void *) &angle;
      break;
     }
   }
 }
 
 void
-cpart_servo::ConfigurePropertiesWindow (CPWindow * WProp)
+cpart_servo::ConfigurePropertiesWindow(CPWindow * WProp)
 {
  lxString Items = Window5.GetPinsNames ();
  lxString spin;
@@ -220,27 +224,47 @@ cpart_servo::ConfigurePropertiesWindow (CPWindow * WProp)
 }
 
 void
-cpart_servo::ReadPropertiesWindow (CPWindow * WProp)
+cpart_servo::ReadPropertiesWindow(CPWindow * WProp)
 {
  input_pin = atoi (((CCombo*) WProp->GetChildByName ("combo1"))->GetText ());
- RegisterRemoteControl();
+ RegisterRemoteControl ();
 }
 
-void 
-cpart_servo::SetOrientation(int _orientation)
+void
+cpart_servo::SetOrientation(int orientation)
 {
- 
+ if (Orientation == orientation)return;
+
+ part::SetOrientation (orientation);
+
  delete BackGround;
- 
- lxImage image(&Window5);
- 
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
- 
- BackGround = lxGetBitmapRotated(&image, &Window5, _orientation); 
+
+ lxImage image (&Window5);
+
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
+
+ BackGround = new lxBitmap (&image, &Window5);
+
  image.Destroy ();
- 
- part::SetOrientation (_orientation);
- 
+}
+
+void
+cpart_servo::SetScale(double scale)
+{
+
+ if (Scale == scale)return;
+
+ part::SetScale (scale);
+
+ delete BackGround;
+
+ lxImage image (&Window5);
+
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
+
+ BackGround = new lxBitmap (&image, &Window5);
+
+ image.Destroy ();
 }
 
 //Register the part in PICSimLab spare parts list

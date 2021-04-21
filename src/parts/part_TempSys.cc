@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,16 +40,17 @@ enum
  I_PO1, I_PO2, I_PO3, I_PO4
 };
 
-cpart_tempsys::cpart_tempsys(unsigned x, unsigned y)
+cpart_tempsys::cpart_tempsys(unsigned x, unsigned y):
+font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
  ReadMaps ();
 
- lxImage image(&Window5);
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ lxImage image (&Window5);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
- Bitmap = lxGetBitmapRotated(&image, &Window5, orientation);
+ Bitmap = new lxBitmap (&image, &Window5);
  image.Destroy ();
 
  canvas.Create (Window5.GetWWidget (), Bitmap);
@@ -57,12 +58,12 @@ cpart_tempsys::cpart_tempsys(unsigned x, unsigned y)
  vtc = 0;
  vt = 0;
 
- image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/VT1.png"));
- vent[0] = lxGetBitmapRotated(&image, &Window1, orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/VT1.svg"), Orientation, Scale * 0.867, Scale * 0.867);
+ vent[0] = new lxBitmap (&image, &Window1);
  image.Destroy ();
 
- image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/VT2.png"));
- vent[1] = lxGetBitmapRotated(&image, &Window1, orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/VT2.svg"), Orientation, Scale * 0.867, Scale * 0.867);
+ vent[1] = new lxBitmap (&image, &Window1);
  image.Destroy ();
 
  input_pins[0] = 0;
@@ -100,9 +101,8 @@ cpart_tempsys::Draw(void)
 
  const picpin * ppins = Window5.GetPinsValues ();
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (9, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -321,25 +321,25 @@ cpart_tempsys::ReadPropertiesWindow(CPWindow * WProp)
  input_pins[3] = atoi (((CCombo*) WProp->GetChildByName ("combo4"))->GetText ());
 }
 
-void 
+void
 cpart_tempsys::SetOrientation(int _orientation)
 {
- 
+/*
  delete vent[0];
  delete vent[1];
- 
- lxImage image(&Window5);
-  
- image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/VT1.png"));
- vent[0] = lxGetBitmapRotated(&image, &Window1, _orientation);
+
+ lxImage image (&Window5);
+
+ image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/VT1.svg"), Orientation, Scale * 0.867, Scale * 0.867);
+ vent[0] = new lxBitmap (&image, &Window1);
  image.Destroy ();
 
- image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/VT2.png"));
- vent[1] = lxGetBitmapRotated(&image, &Window1, _orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("boards/Common/VT2.svg"), Orientation, Scale * 0.867, Scale * 0.867);
+ vent[1] = new lxBitmap (&image, &Window1);
  image.Destroy ();
- 
+*/
  part::SetOrientation (_orientation);
- 
+
 }
 
 part_init("Temperature System", cpart_tempsys, "Other");

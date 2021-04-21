@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2020-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2020-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,7 +34,8 @@ enum
  O_P1, O_P2, O_P3, O_P4, O_P5, O_F1, O_F2, O_LCD
 };
 
-cpart_LCD_ssd1306::cpart_LCD_ssd1306(unsigned x, unsigned y)
+cpart_LCD_ssd1306::cpart_LCD_ssd1306(unsigned x, unsigned y):
+font (8, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
@@ -43,9 +44,9 @@ cpart_LCD_ssd1306::cpart_LCD_ssd1306(unsigned x, unsigned y)
 
  lxImage image(&Window5);
 
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
- Bitmap = lxGetBitmapRotated(&image, &Window5, orientation);
+ Bitmap = new lxBitmap(&image, &Window5);
  image.Destroy ();
  canvas.Create (Window5.GetWWidget (), Bitmap);
 
@@ -73,9 +74,8 @@ cpart_LCD_ssd1306::Draw(void)
 
  int i;
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (8, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -266,10 +266,6 @@ cpart_LCD_ssd1306::Process(void)
 {
  const picpin * ppins = Window5.GetPinsValues ();
 
-
-
-
-
  if (type_com)
   {
    if ((input_pins[0] > 0)&&(input_pins[1] > 0))
@@ -289,8 +285,20 @@ cpart_LCD_ssd1306::Process(void)
      lcd_ssd1306_SPI_io (&lcd, ppins[input_pins[1] - 1].value, ppins[input_pins[0] - 1].value, ppins[input_pins[4] - 1].value, ppins[input_pins[2] - 1].value, ppins[input_pins[3] - 1].value);
     }
   }
+}
 
+void
+cpart_LCD_ssd1306::SetOrientation(int _orientation)
+{
+ part::SetOrientation (_orientation);
+ lcd_ssd1306_update(&lcd);
+}
 
+void
+cpart_LCD_ssd1306::SetScale(double scale)
+{
+ part::SetScale (scale);
+ lcd_ssd1306_update(&lcd);
 }
 
 part_init("LCD ssd1306", cpart_LCD_ssd1306, "Output");

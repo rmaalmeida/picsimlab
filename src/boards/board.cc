@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2015  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ board::board(void)
  use_spare = 0;
  Proc = "";
  p_RST = 1;
+ Scale = Window1.GetScale ();
 }
 
 board::~board(void) { }
@@ -60,6 +61,9 @@ board::ReadInputMap(lxString fname)
  char *name;
  char *value;
 
+ int board_w = 0;
+ int board_h = 0;
+
 
  int x1, y1, x2, y2, r;
 
@@ -80,22 +84,52 @@ board::ReadInputMap(lxString fname)
 
          if (!strcmp ("width", name))
           {
-           sscanf (value, "%i", &x1);
-           Window1.SetplWidth (x1);
-           Window1.draw1.SetWidth (x1 * Window1.GetScale ());
-           Window1.SetWidth (185 + x1 * Window1.GetScale ());
+           sscanf (value, "%i", &board_w);
+           Window1.SetplWidth (board_w);
+
+
+           unsigned int ww = 185 + board_w * Window1.GetScale ();
+           if (ww > lxGetDisplayWidth (0))
+            {
+             float scalex = ((lxGetDisplayWidth (0) - 185)*1.0) / board_w;
+             Window1.draw1.SetWidth (board_w * scalex);
+             Window1.SetWidth (lxGetDisplayWidth (0));
+             if (scalex < Scale)
+              {
+               Scale = scalex;
+              }
+            }
+           else
+            {
+             Window1.draw1.SetWidth (board_w * Window1.GetScale ());
+             Window1.SetWidth (ww);
+            }
           }
 
          if (!strcmp ("height", name))
           {
-           sscanf (value, "%i", &y1);
-           Window1.SetplHeight (y1);
-           Window1.draw1.SetHeight (y1 * Window1.GetScale ());
-#ifdef _WIN_
-           Window1.SetHeight (75 + y1 * Window1.GetScale ());
-#else
-           Window1.SetHeight (90 + y1 * Window1.GetScale ());
-#endif
+           sscanf (value, "%i", &board_h);
+           Window1.SetplHeight (board_h);
+
+           unsigned int wh = 90 + board_h * Window1.GetScale ();
+
+           if (wh > lxGetDisplayHeight (0))
+            {
+             float scaley = ((lxGetDisplayHeight (0) - 90)*1.0) / board_h;
+
+             Window1.draw1.SetHeight (board_h * scaley);
+             Window1.SetHeight (lxGetDisplayHeight (0));
+             Window1.SetWidth (185 + board_w * scaley);
+             if (scaley < Scale)
+              {
+               Scale = scaley;
+              }
+            }
+           else
+            {
+             Window1.draw1.SetHeight (board_h * Window1.GetScale ());
+             Window1.SetHeight (wh);
+            }
           }
 
         }
@@ -135,7 +169,7 @@ board::ReadInputMap(lxString fname)
          input[inputc].y2 = y1 + r;
         }
        strcpy (input[inputc].name, name);
-       input[inputc].id = get_in_id (input[inputc].name);       
+       input[inputc].id = get_in_id (input[inputc].name);
        input[inputc].cx = ((input[inputc].x2 - input[inputc].x1) / 2.0) + input[inputc].x1;
        input[inputc].cy = ((input[inputc].y2 - input[inputc].y1) / 2.0) + input[inputc].y1;
        input[inputc].status = NULL;
@@ -323,7 +357,7 @@ board::GetOutput(int n)
 unsigned char
 board::CalcAngle(int in, int x, int y)
 {
- int dx = input[in].cx - x; 
+ int dx = input[in].cx - x;
  int dy = y - input[in].cy;
  double angle = 0;
 
@@ -348,4 +382,16 @@ board::CalcAngle(int in, int x, int y)
  if (angle < 20) angle = 20;
 
  return (199 * (angle - 20) / 320.0);
+}
+
+void
+board::SetScale(double scale)
+{
+ Scale = scale;
+}
+
+double
+board::GetScale(void)
+{
+ return Scale;
 }

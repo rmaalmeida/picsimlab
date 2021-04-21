@@ -44,11 +44,9 @@ CPWindow5 Window5;
 void
 CPWindow5::_EvOnShow(CControl * control)
 {
- draw1.SetWidth (Width - 15);
- draw1.SetHeight (Height - 40);
-
+ need_resize = 0;
  timer1.SetRunState (1);
- Window4.SetBaseTimer ();
+
 }
 
 void
@@ -80,6 +78,10 @@ CPWindow5::_EvOnCreate(CControl * control)
     {
      menu1_Outputs.CreateChild (&MParts[i]);
     }
+   else if (!strcmp (parts_list[i].menu, "Virtual"))
+    {
+     menu1_Virtual.CreateChild (&MParts[i]);
+    }
    else
     {
      menu1_Others.CreateChild (&MParts[i]);
@@ -95,9 +97,9 @@ CPWindow5::draw1_EvMouseButtonPress(CControl * control, uint button, uint x, uin
 
  for (int i = 0; i < partsc; i++)
   {
-   if (parts[i]->PointInside ((int) x, (int) y))
+   if (parts[i]->PointInside ((int) (x - offsetx), (int) (y - offsety)))
     {
-     parts[i]->EvMouseButtonPress (button, x - parts[i]->GetX (), y - parts[i]->GetY (), state);
+     parts[i]->EvMouseButtonPress (button, (x - offsetx) - parts[i]->GetX (), (y - offsety) - parts[i]->GetY (), state);
      if (button == 3)
       {
        PartSelected = i;
@@ -118,7 +120,7 @@ CPWindow5::draw1_EvMouseButtonPress(CControl * control, uint button, uint x, uin
   {
    //timer1.SetRunState (0); 
    lxSetCursor (lxCursor (lxCURSOR_ARROW));
-   parts[partsc] = create_part ((char *) PartToCreate.char_str (), x, y);
+   parts[partsc] = create_part ((char *) PartToCreate.char_str (), x - offsetx, y - offsety);
 
    if (parts[partsc] == NULL)
     {
@@ -127,10 +129,25 @@ CPWindow5::draw1_EvMouseButtonPress(CControl * control, uint button, uint x, uin
    else
     {
      parts[partsc]->SetId (partsc);
+     parts[partsc]->SetScale (scale);
      partsc++;
     }
    PartToCreate = "";
    _EvOnShow (control);
+   return;
+  }
+
+ if (button == 1)
+  {
+   lxSetCursor (lxCursor (lxCURSOR_SIZENWSE));
+   mouse_scroll = 1;
+   mdx = x;
+   mdy = y;
+  }
+ else if (button == 3)
+  {
+   offsetx = 0;
+   offsety = 0;
   }
 }
 
@@ -142,6 +159,7 @@ CPWindow5::draw1_EvMouseButtonRelease(CControl * control, uint button, uint x, u
 
  PartToMove = -1;
 
+ mouse_scroll = 0;
 
  lxSetCursor (lxCursor (lxCURSOR_ARROW));
  mdx = 0;
@@ -149,9 +167,9 @@ CPWindow5::draw1_EvMouseButtonRelease(CControl * control, uint button, uint x, u
 
  for (int i = 0; i < partsc; i++)
   {
-   if (parts[i]->PointInside (x, y))
+   if (parts[i]->PointInside (x - offsetx, y - offsety))
     {
-     parts[i]->EvMouseButtonRelease (button, x - parts[i]->GetX (), y - parts[i]->GetY (), state);
+     parts[i]->EvMouseButtonRelease (button, (x - offsetx) - parts[i]->GetX (), (y - offsety) - parts[i]->GetY (), state);
      return;
     }
   }
@@ -170,8 +188,8 @@ CPWindow5::pmenu2_Properties_EvMenuActive(CControl * control)
 
    parts[PartSelected]->ConfigurePropertiesWindow (&wprop);
 
-   wprop.SetX (parts[PartSelected]->GetX () + GetX ());
-   wprop.SetY (parts[PartSelected]->GetY () + GetY ());
+   wprop.SetX (parts[PartSelected]->GetX () + GetX () - offsetx);
+   wprop.SetY (parts[PartSelected]->GetY () + GetY () - offsety);
 
    wprop.Draw ();
    wprop.ShowExclusive ();
@@ -239,6 +257,21 @@ CPWindow5::PartEvent(CControl * control)
 void
 CPWindow5::timer1_EvOnTime(CControl * control)
 {
+ static int tc = 0;
+
+ if (need_resize == 1)
+  {
+   draw1.SetWidth (Width - 15);
+   //draw1.SetHeight (Height - 40);
+#ifdef _WIN_
+   draw1.SetHeight (Height - 75);
+#else
+   draw1.SetHeight (Height - 90);
+#endif
+   Window4.SetBaseTimer ();
+  }
+
+ need_resize++;
 
  for (int i = 0; i < partsc; i++)
   {
@@ -252,34 +285,42 @@ CPWindow5::timer1_EvOnTime(CControl * control)
  draw1.Canvas.SetBgColor (50, 50, 50);
  draw1.Canvas.Rectangle (1, 0, 0, draw1.GetWidth (), draw1.GetHeight ());
 
- draw1.Canvas.ChangeScale (scale, scale);
-
  for (int i = 0; i < partsc; i++)
   {
-   draw1.Canvas.PutBitmap (parts[i]->GetBitmap (), parts[i]->GetX (), parts[i]->GetY ());
+   draw1.Canvas.PutBitmap (parts[i]->GetBitmap (), (parts[i]->GetX () + offsetx) * scale, (parts[i]->GetY () + offsety) * scale);
   }
-
- draw1.Canvas.ChangeScale (1.0, 1.0);
-
- if (useAlias)
-  {
-   draw1.Canvas.SetFgColor (180, 180, 00);
-   draw1.Canvas.Text ("Alias On", 10, 5);
-  }
- else
-  {
-   draw1.Canvas.SetFgColor (180, 180, 180);
-   draw1.Canvas.Text ("Alias Off", 10, 5);
-  }
-
- draw1.Canvas.SetFgColor (180, 180, 180);
- lxString temp;
- temp.Printf ("Scale %3.1f", scale);
- draw1.Canvas.Text (temp, 10, 20);
 
  draw1.Canvas.End ();
  draw1.Update ();
 
+ tc++;
+
+ if (tc > 3)
+  {
+   tc = 0;
+   lxString field;
+   field.Printf ("Use Alias: %s", (useAlias == 1) ? "On" : "Off");
+   statusbar1.SetField (0, field);
+
+   field.Printf ("Scale: %3.1f", scale);
+   statusbar1.SetField (1, field);
+
+   field.Printf ("Offset: %3i %3i", offsetx, offsety);
+   statusbar1.SetField (2, field);
+  }
+}
+
+void
+CPWindow5::draw1_EvMouseWheel(CControl * control, const int rotation)
+{
+ if (rotation > 0)
+  {
+   menu1_Edit_Zoomin_EvMenuActive (this);
+  }
+ else
+  {
+   menu1_Edit_Zoomout_EvMenuActive (this);
+  }
 }
 
 void
@@ -288,7 +329,14 @@ CPWindow5::draw1_EvMouseMove(CControl * control, uint button, uint x, uint y, ui
  x = x / scale;
  y = y / scale;
 
- if (PartToMove >= 0)
+ if (mouse_scroll)
+  {
+   offsetx -= mdx - x;
+   offsety -= mdy - y;
+   mdx = x;
+   mdy = y;
+  }
+ else if (PartToMove >= 0)
   {
 
 
@@ -307,7 +355,7 @@ CPWindow5::draw1_EvMouseMove(CControl * control, uint button, uint x, uint y, ui
     {
      if (parts[i]->PointInside (x, y))
       {
-       parts[i]->EvMouseMove (button, x - parts[i]->GetX (), y - parts[i]->GetY (), state);
+       parts[i]->EvMouseMove (button, (x - offsetx) - parts[i]->GetX (), (y - offsety) - parts[i]->GetY (), state);
        return;
       }
     }
@@ -325,12 +373,22 @@ CPWindow5::draw1_EvKeyboardPress(CControl * control, const uint key, const uint 
    Window4.SetBaseTimer ();
    break;
   case '='://+
-   scale += 0.1;
-   if (scale > 2)scale = 2;
+   menu1_Edit_Zoomin_EvMenuActive (this);
    break;
   case '-':
-   scale -= 0.1;
-   if (scale < 0.1)scale = 0.1;
+   menu1_Edit_Zoomout_EvMenuActive (this);
+   break;
+  case LXK_UP:
+   offsety += 10;
+   break;
+  case LXK_DOWN:
+   offsety -= 10;
+   break;
+  case LXK_LEFT:
+   offsetx += 10;
+   break;
+  case LXK_RIGHT:
+   offsetx -= 10;
    break;
   default:
    for (int i = 0; i < partsc; i++)
@@ -465,6 +523,7 @@ CPWindow5::LoadConfig(lxString fname)
        if (newformat)
         {
          parts[partsc_]->SetOrientation (orient);
+         parts[partsc_]->SetScale (scale);
         }
        partsc_++;
       }
@@ -686,6 +745,11 @@ CPWindow5::menu1_Edit_Zoomin_EvMenuActive(CControl * control)
 {
  scale += 0.1;
  if (scale > 2)scale = 2;
+
+ for (int i = 0; i < partsc; i++)
+  {
+   parts[i]->SetScale (scale);
+  }
 }
 
 void
@@ -693,6 +757,10 @@ CPWindow5::menu1_Edit_Zoomout_EvMenuActive(CControl * control)
 {
  scale -= 0.1;
  if (scale < 0.1)scale = 0.1;
+ for (int i = 0; i < partsc; i++)
+  {
+   parts[i]->SetScale (scale);
+  }
 }
 
 void
@@ -788,7 +856,7 @@ CPWindow5::pmenu2_Delete_EvMenuActive(CControl * control)
 void
 CPWindow5::pmenu2_Help_EvMenuActive(CControl * control)
 {
- lxLaunchDefaultBrowser (lxT ("https://lcgamboa.github.io/picsimlab/") + parts[PartSelected]->GetHelpURL ());
+ lxLaunchDefaultBrowser (lxT ("https://lcgamboa.github.io/picsimlab_docs/") + parts[PartSelected]->GetHelpURL ());
 }
 
 void
@@ -802,7 +870,7 @@ CPWindow5::menu1_Help_Contents_EvMenuActive(CControl * control)
 {
 #ifdef EXT_BROWSER
  //lxLaunchDefaultBrowser(lxT("file://")+share + lxT ("docs/picsimlab.html"));
- lxLaunchDefaultBrowser (lxT ("https://lcgamboa.github.io/picsimlab/Spare_Parts.html"));
+ lxLaunchDefaultBrowser (lxT ("https://lcgamboa.github.io/picsimlab_docs/Spare_Parts.html"));
 #else 
  Window2.html1.SetLoadFile (Window1.GetSharePath () + lxT ("docs/picsimlab.html"));
  Window2.Show ();

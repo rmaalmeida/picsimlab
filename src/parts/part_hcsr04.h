@@ -4,7 +4,7 @@
 
 	   ########################################################################
 
-	   Copyright (c) : 2010-2015  Luis Claudio Gambôa Lopes
+	   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
 	   This program is free software; you can redistribute it and/or modify
 	   it under the terms of the GNU General Public License as published by
@@ -33,13 +33,13 @@ class cpart_hcsr04:public part
 {
     public:
       lxString GetName(void){return lxT("Ultrasonic HC-SR04");};
-      lxString GetHelpURL(void){return lxT("Ultrasonic_HC-SR04.html");};
+      lxString GetHelpURL(void){return lxT("Ultrasonic_HC_SR04.html");};
       lxString GetAboutInfo(void){return lxT("L.C. Gamboa \n <lcgamboa@yahoo.com>");};            
       cpart_hcsr04(unsigned x, unsigned y);
       ~cpart_hcsr04(void); 
       void Draw(void);
       void Process(void);
-      lxString GetPictureFileName(void){return lxT("hcsr04/hcsr04.png");};
+      lxString GetPictureFileName(void){return lxT("hcsr04/hcsr04.svg");};
       lxString GetInputMapFile(void){return lxT("hcsr04/hcsr04_i.map");};
       lxString GetOutputMapFile(void){return lxT("hcsr04/hcsr04_o.map");};
       lxString GetPropertiesWindowFile(void){return lxT("hcsr04/hcsr04.lxrad");};
@@ -61,6 +61,8 @@ class cpart_hcsr04:public part
       unsigned int  count;
       unsigned int  delay;
       unsigned char old_value;
+      lxFont font;
+      lxFont font_p;
 };
 
 

@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2020-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2020-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -47,7 +47,8 @@ enum
  TC_SPI = 0, TC_8BITS, TC_SPI_TOUCH, TC_8BITS_TOUCH
 };
 
-cpart_LCD_ili9341::cpart_LCD_ili9341(unsigned x, unsigned y)
+cpart_LCD_ili9341::cpart_LCD_ili9341(unsigned x, unsigned y):
+font (8, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD)
 {
  X = x;
  Y = y;
@@ -92,19 +93,19 @@ cpart_LCD_ili9341::GetPictureFileName(void)
  switch (type_com)
   {
   case TC_SPI:
-   return lxT ("LCD_ili9341/LCD_ili9341.png");
+   return lxT ("LCD_ili9341/LCD_ili9341.svg");
    break;
   case TC_SPI_TOUCH:
-   return lxT ("LCD_ili9341/LCD_ili9341_t.png");
+   return lxT ("LCD_ili9341/LCD_ili9341_t.svg");
    break;
   case TC_8BITS:
-   return lxT ("LCD_ili9341/LCD_ili9341_8.png");
+   return lxT ("LCD_ili9341/LCD_ili9341_8.svg");
    break;
   case TC_8BITS_TOUCH:
-   return lxT ("LCD_ili9341/LCD_ili9341_8_t.png");
+   return lxT ("LCD_ili9341/LCD_ili9341_8_t.svg");
    break;
   }
- return lxT ("LCD_ili9341/LCD_ili9341.png");
+ return lxT ("LCD_ili9341/LCD_ili9341.svg");
 }
 
 lxString
@@ -160,9 +161,8 @@ cpart_LCD_ili9341::Draw(void)
 
  int i;
 
- canvas.Init (1.0, 1.0, orientation);
+ canvas.Init (Scale, Scale, Orientation);
 
- lxFont font (8, lxFONTFAMILY_TELETYPE, lxFONTSTYLE_NORMAL, lxFONTWEIGHT_BOLD);
  canvas.SetFont (font);
 
  for (i = 0; i < outputc; i++)
@@ -761,7 +761,7 @@ cpart_LCD_ili9341::ChangeType(unsigned char tp)
  ReadMaps ();
 
  lxImage image(&Window5);
- image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), orientation);
+ image.LoadFile (Window1.GetSharePath () + lxT ("parts/") + GetPictureFileName (), Orientation, Scale, Scale);
 
  Bitmap = new lxBitmap (&image, &Window5);
  image.Destroy ();
@@ -838,6 +838,20 @@ cpart_LCD_ili9341::Reset(void)
 {
  lcd_ili9341_rst (&lcd);
  tsc_XPT2046_rst (&touch);
+}
+
+void
+cpart_LCD_ili9341::SetOrientation(int _orientation)
+{
+ part::SetOrientation (_orientation);
+ lcd_ili9341_update(&lcd);
+}
+
+void
+cpart_LCD_ili9341::SetScale(double scale)
+{
+ part::SetScale (scale);
+ lcd_ili9341_update(&lcd);
 }
 
 part_init("LCD ili9341", cpart_LCD_ili9341, "Output");

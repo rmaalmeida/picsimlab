@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2019-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2019-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@ class cpart_keypad:public part
       unsigned char output_pins[8];    
       unsigned char keys[4][4];
       unsigned char keys2[2][5];
+      lxFont font;
 };
 
 

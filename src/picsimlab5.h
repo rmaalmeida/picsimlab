@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2020  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ public:
     CPMenu menu1_Inputs;
     CPMenu menu1_Outputs;
     CPMenu menu1_Others;
+    CPMenu menu1_Virtual;
     CPMenu pmenu2;
     CItemMenu pmenu2_Properties;
     CItemMenu pmenu2_Move;
@@ -71,6 +72,7 @@ public:
     CItemMenu menu1_Help_Contents;
     CItemMenu menu1_Help_About;
     CFileDialog filedialog1;
+    CStatusbar statusbar1;
     /*#Events*/
     void _EvOnCreate(CControl * control);
     void _EvOnShow(CControl * control);
@@ -80,6 +82,7 @@ public:
     void draw1_EvMouseButtonRelease(CControl * control, const uint button, const uint x, const uint y, const uint state);
     void draw1_EvKeyboardPress(CControl * control, const uint key, const uint hkey, const uint mask);
     void draw1_EvKeyboardRelease(CControl * control, const uint key, const uint hkey, const uint mask);
+    void draw1_EvMouseWheel(CControl * control, const int rotation);
     void pmenu2_Properties_EvMenuActive(CControl * control);
     void timer1_EvOnTime(CControl * control);
     void menu1_File_Newconfiguration_EvMenuActive(CControl * control);
@@ -187,6 +190,10 @@ private:
     int fdtype;
     lxString oldfname;
     lxString alias_fname;
+    int offsetx;
+    int offsety;
+    int mouse_scroll;
+    int need_resize;
 };
 
 extern CPWindow5 Window5;

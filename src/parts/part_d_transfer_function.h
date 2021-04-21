@@ -4,7 +4,7 @@
 
    ########################################################################
 
-   Copyright (c) : 2010-2015  Luis Claudio Gambôa Lopes
+   Copyright (c) : 2010-2021  Luis Claudio Gambôa Lopes
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ class cpart_dtfunc:public part
       ~cpart_dtfunc(void);
       void Draw(void);
       void Process(void);
-      lxString GetPictureFileName(void){return lxT("dtfunc/d_transfer_function.png");};
+      lxString GetPictureFileName(void){return lxT("dtfunc/d_transfer_function.svg");};
       lxString GetInputMapFile(void){return lxT("dtfunc/d_transfer_function_i.map");};
       lxString GetOutputMapFile(void){return lxT("dtfunc/d_transfer_function_o.map");};
       lxString GetPropertiesWindowFile(void){return lxT("dtfunc/d_transfer_function.lxrad");};
@@ -69,6 +69,7 @@ class cpart_dtfunc:public part
       float out_gain;
       float out_off;
       long unsigned int nsamples;
+      lxFont font;
 };
 
 
